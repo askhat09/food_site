@@ -225,29 +225,28 @@ window.addEventListener('DOMContentLoaded', () => {
             statusMessage.classList.add('status');
             statusMessage.textContent = message.loading;
             form.appendChild(statusMessage);
-        
-            const request = new XMLHttpRequest();
-            request.open('POST', 'server.php');
-            request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+
             const formData = new FormData(form);
 
             const object = {};
             formData.forEach(function(value, key){
                 object[key] = value;
             });
-            const json = JSON.stringify(object);
 
-            request.send(json);
-
-            request.addEventListener('load', () => {
-                if (request.status === 200) {
-                    console.log(request.response);
-                    showModalMessage(message.success);
-                    form.reset();
-                    statusMessage.remove();
-                } else {
-                    showModalMessage(message.failure);
-                }
+            fetch('server.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(object)
+            }).then(data => {
+                console.log(data);
+                showModalMessage(message.success);
+                statusMessage.remove();
+            }).catch(() => {
+                showModalMessage(message.failure);
+            }).finally(() => {
+                form.reset();
             });
         });
     }
