@@ -122,7 +122,7 @@ window.addEventListener('DOMContentLoaded', () => {
             }
         })
 
-        const modalTimer = setTimeout(showModal, 40000);
+        const modalTimer = setTimeout(showModal, 140000);
 
         function showModalByScroll() {
             if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
@@ -389,5 +389,78 @@ window.addEventListener('DOMContentLoaded', () => {
             dots[slideIndex - 1].style.opacity = '1';
         });
     });
+
+    // Calc
+
+    const result = document.querySelector('.calculating__result span');
+    let sex = 'female',
+        heigth, weight, age,
+        ratio = 1.375;
+
+    function calculate() {
+        if (!sex || !heigth || !weight || !age) {
+            result.textContent = "________";
+            return;
+        }
+
+        if ( sex == 'female') {
+            result.textContent = Math.round((447.6 + (9.2 * weight) + (3.1* heigth) -(4.3 * age)) * ratio);
+        } else {
+            result.textContent = Math.round((88.36 + (13.4 * weight) + (4.8 * heigth) - (5.7 * age)) * ratio);
+        }
+    }
+
+    calculate();
+
+    function getStaticValue(parentSelector, activeClass) {
+        const elements = document.querySelectorAll(`${parentSelector} div`);
+
+        elements.forEach(elem => {
+            elem.addEventListener('click', (e) => {
+                if (e.target.getAttribute('data-ratio')) {
+                    ratio = +e.target.getAttribute('data-ratio');
+                } else {
+                    sex = e.target.getAttribute('id');
+                }
+
+                console.log(ratio, sex);
+
+                elements.forEach(elem => {
+                    elem.classList.remove(activeClass);
+                });
+
+                e.target.classList.add(activeClass);
+
+                calculate();
+            });
+        });
+
+    }
+
+    getStaticValue('.calculating__choose_big', 'calculating__choose-item_active');
+    getStaticValue('#gender', 'calculating__choose-item_active');
+
+    function getDynamicValue(selector) {
+        const input = document.querySelector(selector);
+
+        input.addEventListener('input', () => {
+           switch(input.getAttribute('id')) {
+               case 'height':
+                   heigth = +input.value;
+                   break;
+               case 'weight':
+                   weight = +input.value;
+                   break;
+               case 'age':
+                   age = +input.value;
+                   break;
+           }
+           calculate();
+        });
+    }
+
+    getDynamicValue('#height');
+    getDynamicValue('#weight');
+    getDynamicValue('#age');
 
 });
